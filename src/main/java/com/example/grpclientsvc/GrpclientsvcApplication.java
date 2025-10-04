@@ -23,5 +23,6 @@ public class GrpclientsvcApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         System.out.println(stockClientService.getStockPrice("GOOGLE"));
+        stockClientService.subscribeStockPrice("GOOGLE");
     }
 }

@@ -20,4 +20,7 @@ message StockResponse {
 service StockTradingService {
     //Uniary RPC
     rpc GetStockPrice(StockRequest) returns (StockResponse);
+
+    //server streaming
+    rpc subscribeStockPrice(StockRequest) returns (stream StockResponse);
 }
