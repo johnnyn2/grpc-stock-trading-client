@@ -31,5 +31,8 @@ public class GrpclientsvcApplication implements CommandLineRunner {
         // client streaming
         System.out.println("=====Client Streaming=====");
         stockClientService.bulkStockOrder();
+        // bidirectional streaming
+        System.out.println("=====Bidirectional Streaming=====");
+        stockClientService.liveTrading();
     }
 }

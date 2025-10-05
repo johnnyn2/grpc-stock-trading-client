@@ -6,6 +6,7 @@ import com.example.StockOrder;
 import com.example.StockRequest;
 import com.example.StockResponse;
 import com.example.StockTradingServiceGrpc;
+import com.example.TradeStatus;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
@@ -93,6 +94,47 @@ public class StockClientService {
                             .setQuantity(i)
                             .build())
             );
+            streamObserver.onCompleted();
+        } catch (Exception e) {
+            streamObserver.onError(e);
+            throw e;
+        } finally {
+            // Allow time for the server to process and response
+            Thread.sleep(2000);
+        }
+    }
+
+    public void liveTrading() throws InterruptedException {
+        StreamObserver<StockOrder> streamObserver = stockTradingServiceStub.liveTrading(new StreamObserver<TradeStatus>() {
+            @Override
+            public void onNext(TradeStatus tradeStatus) {
+                System.out.println("Trade Status: " + tradeStatus);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                System.err.println(throwable.getMessage());
+            }
+
+            @Override
+            public void onCompleted() {
+                System.out.println("Completed");
+            }
+        });
+        try {
+            IntStream.range(0, 10).forEach(i -> {
+                streamObserver.onNext(StockOrder.newBuilder()
+                        .setPrice(i * 10.0)
+                        .setOrderId(Integer.toString(i))
+                        .setStockSymbol("GOOGLE")
+                        .setQuantity(i)
+                        .build());
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            });
             streamObserver.onCompleted();
         } catch (Exception e) {
             streamObserver.onError(e);
